@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -5,6 +6,8 @@ import { AppModule } from './app.module';
 import corsConfig from './config/cors.config';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
@@ -48,5 +51,7 @@ async function bootstrap() {
   });
 
   await app.listen(port);
+
+  logger.verbose(`Application runnin on port ${port}`);
 }
 bootstrap();
