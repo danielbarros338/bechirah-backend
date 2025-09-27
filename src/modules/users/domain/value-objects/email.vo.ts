@@ -1,5 +1,9 @@
 export class Email {
-  constructor(private readonly value: string) {}
+  constructor(private readonly email: string) {}
+
+  get value(): string {
+    return this.email;
+  }
 
   static create(raw: string): Email {
     const normalized = raw.trim().toLowerCase();
