@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Roles } from '../../../../shared/enums/Roles.enum';
 
 @Entity('users')
 export class User {
@@ -40,7 +41,7 @@ export class User {
     description: 'Regra de acesso do usuário',
   })
   @Column({ type: 'varchar', length: 20 })
-  role: string;
+  role: Roles;
 
   @ApiProperty({
     example: 'true',
@@ -62,10 +63,9 @@ export class User {
   })
   @Column({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
+    nullable: true,
   })
-  updatedAt: Date;
+  updatedAt: Date | null;
 
   @ApiProperty({
     example: '2025-12-31T23:59:59Z',

@@ -4,6 +4,8 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import corsConfig from './config/cors/cors.config';
+import { AllExceptionsFilter } from './shared/interceptors/AllExceptionsFilter.interceptor';
+import { TransformInterceptor } from './shared/interceptors/TransformInterceptor.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -15,6 +17,9 @@ async function bootstrap() {
     'PORT',
     parseInt(process.env.PORT ?? '3200', 10),
   );
+
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors({
     origin: corsConfig().origin,

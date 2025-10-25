@@ -1,20 +1,25 @@
-export class Role {
-  constructor(private readonly role: string) {}
+import { Roles } from '../../../../shared/enums/Roles.enum';
 
-  get value(): string {
+export class Role {
+  constructor(private readonly role: Roles) {}
+
+  get value(): Roles {
     return this.role;
   }
 
-  static create(raw: string): Role {
-    const trimmed = raw.trim().toUpperCase();
-    const validRoles = ['ADMIN', 'USER', 'MODERATOR']; // Example roles
+  static create(raw: Roles): Role {
+    const trimmed = raw.trim();
+    const validRoles = Object.values(Roles) as string[];
 
-    if (!validRoles.includes(trimmed)) {
-      throw new Error(
-        `Role must be one of the following: ${validRoles.join(', ')}`,
-      ); // TODO: Custom error
+    const matched = validRoles.find(
+      (r) => r.toLowerCase() === trimmed.toLowerCase(),
+    );
+
+    if (!matched) {
+      const message = `Role must be one of the following: ${validRoles.join(', ')}`;
+      throw new Error(message); // TODO: Custom error
     }
 
-    return new Role(trimmed);
+    return new Role(matched as Roles);
   }
 }
