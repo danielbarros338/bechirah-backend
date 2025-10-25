@@ -25,74 +25,117 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## Bechirah - Backend
 
-```bash
-$ yarn install
+Bem-vindo ao repositório backend do projeto Bechirah. Este serviço é uma API REST construída com NestJS que implementa princípios de arquitetura limpa/hexagonal e DDD (Domain-Driven Design) para manter separação de responsabilidades, testabilidade e fácil evolução.
+
+## Visão geral
+
+O backend expõe endpoints para gestão de usuários, autenticação, currículos e vagas de emprego. Foi desenvolvido com foco em organização por camadas, reuso e isolamento de infraestrutura (ORM, HTTP) por meio de portas e adaptadores.
+
+Tecnologias principais
+- Node.js + TypeScript
+- NestJS (framework)
+- TypeORM (ORM)
+- MySQL (conforme `src/config/database/typeorm.config.ts` — variável de ambiente configurável)
+- Jest (testes)
+
+## Arquitetura adotada
+
+O projeto segue uma mistura de Clean Architecture / Hexagonal com influências de DDD:
+
+- Módulos por domínio: cada grande domínio tem seu próprio módulo em `src/modules/*` (por exemplo `users`, `auth`, `curriculums`, `jobs`).
+- Camadas dentro de cada módulo:
+  - domain: entidades e value objects (ex.: `src/modules/users/domain/entities`)
+  - application: casos de uso, DTOs e portas (interfaces) que definem comportamentos independentes de infra
+  - infra: adaptadores concretos (controllers HTTP, repositórios TypeORM, mappers, orm-entities)
+
+- Ports & Adapters: portas (interfaces) ficam em `application/ports` e implementações em `infra/repository` — isso permite trocar o banco sem afetar regras de negócio.
+- Configurações compartilhadas estão em `src/config` (CORS, database, JWT). O JWT é registrado como módulo global (`src/config/jwt/jwt.module.ts`).
+
+Benefícios desta abordagem
+- Independência entre regras de negócio e detalhes de infraestrutura.
+- Testabilidade dos casos de uso (podem ser testados substituindo adaptadores por mocks).
+- Código organizado e fácil de navegar por domínio.
+
+## Estrutura de pastas (resumido)
+
+- src/
+  - modules/
+    - users/
+      - domain/ (entidades, value objects)
+      - application/ (use-cases, dtos, ports)
+      - infra/ (controllers, repositories, orm-entities, mappers)
+    - auth/
+    - curriculums/
+    - jobs/
+  - config/ (database, cors, jwt)
+  - shared/ (utilitários, value objects comuns, dtos)
+
+Exemplo: `src/modules/users/application/ports/UserRepository.port.ts` define a interface de repositório; `src/modules/users/infra/repository/User.repository.ts` implementa essa interface usando TypeORM.
+
+## Variáveis de ambiente (principais)
+
+Configure um arquivo `.env` com, pelo menos, as seguintes variáveis:
+
+- DB_HOST — host do banco
+- DB_PORT — porta (ex: 3306)
+- DB_USER — usuário do banco
+- DB_PASSWORD — senha do banco
+- DB_DATABASE — nome do banco
+- JWT_SECRET — segredo para assinatura de tokens
+- JWT_EXPIRES — tempo de expiração (ex: "1h")
+
+Observação: algumas opções do TypeORM (synchronize, migrationsRun) estão definidas diretamente no arquivo de configuração e marcadas como TODO para torná-las configuráveis por ambiente.
+
+## Como rodar (desenvolvimento)
+
+1. Instale dependências:
+
+```powershell
+yarn install
 ```
 
-## Compile and run the project
+2. Defina as variáveis de ambiente (crie `.env` na raiz).
 
-```bash
-# development
-$ yarn run start
+3. Inicie em modo de desenvolvimento (watch):
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+```powershell
+yarn start:dev
 ```
 
-## Run tests
+Scripts (conforme `package.json`): `start`, `start:dev`, `start:prod`, `build`, `test`, `test:e2e`, `lint`, `format`.
 
-```bash
-# unit tests
-$ yarn run test
+## Testes
 
-# e2e tests
-$ yarn run test:e2e
+- Testes unitários: `yarn test`
+- Testes E2E: `yarn test:e2e`
 
-# test coverage
-$ yarn run test:cov
-```
+Recomenda-se escrever testes para os casos de uso (application) substituindo dependências por doubles/mocks.
 
-## Deployment
+## Contribuindo / Convenções
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Siga a estrutura de módulos por domínio.
+- Regras de negócio ficam em `domain` e `application`.
+- Não colocar lógica de negócio diretamente em controllers ou entidades do ORM.
+- Use DTOs para entrada/saída de casos de uso e controllers.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Próximos passos recomendados
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
+- Tornar `synchronize` e `migrationsRun` configuráveis via variáveis de ambiente.
+- Adicionar scripts de migração e um processo de deploy (CI/CD).
+- Cobertura de testes para casos de uso críticas (autenticação, criação de usuários, fluxo de vagas).
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Contato
 
-## Resources
+Para dúvidas ou acesso ao time: consulte o repositório remoto ou o time responsável pelo projeto.
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Arquivo gerado automaticamente como README do repositório backend do projeto Bechirah. Se quiser, faço uma versão mais curta (para o GitHub) ou uma versão em inglês.
 
-## Support
+## Licença
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Este repositório está coberto por uma licença personalizada da Logos Next Consultoria e Tecnologia. Consulte o arquivo `LICENSE.md` na raiz do repositório para o texto completo. Em resumo: o uso não-comercial do código é permitido; qualquer Uso Comercial (venda, prestação de serviços pagos, integração em produto comercial, distribuição com finalidade comercial, ou outra exploração econômica) é proibido sem autorização prévia e por escrito da Logos Next (CNPJ: 63.182.351/0001-80).
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Se você ou sua organização têm interesse em uma licença comercial, siga as instruções em `LICENSE.md` para solicitar autorização ou entre em contato com os mantenedores do repositório para orientação sobre o processo de licenciamento.
