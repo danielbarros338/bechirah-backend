@@ -98,9 +98,9 @@ export class User {
       Password.fromHashed(data.password),
       IsActive.create(data.isActive),
       Role.create(data.role),
-      CreatedAt.create(new Date()),
-      UpdatedAt.create(null),
-      DeletedAt.create(null),
+      CreatedAt.create(data.createdAt ?? new Date()),
+      UpdatedAt.create(data.updatedAt ?? null),
+      DeletedAt.create(data.deletedAt ?? null),
     );
   }
 }
