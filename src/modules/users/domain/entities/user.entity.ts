@@ -1,10 +1,10 @@
 import { Roles } from '../../../../shared/enums/Roles.enum';
 import { CreatedAt } from '../../../../shared/valueObjects/createdAt.vo';
 import { DeletedAt } from '../../../../shared/valueObjects/deletedAt.vo';
+import { Id } from '../../../../shared/valueObjects/idUser.vo';
 import { UpdatedAt } from '../../../../shared/valueObjects/updatedAt.vo';
 import { UserProp } from '../props/user.prop';
 import { Email } from '../value-objects/email.vo';
-import { IdUser } from '../value-objects/idUser.vo';
 import { IsActive } from '../value-objects/isActive.vo';
 import { Name } from '../value-objects/name.vo';
 import { Password } from '../value-objects/password.vo';
@@ -13,7 +13,7 @@ import { Username } from '../value-objects/username.vo';
 
 export class User {
   constructor(
-    private id: IdUser,
+    private id: Id,
     private name: Name,
     private username: Username,
     private readonly email: Email,
@@ -91,7 +91,7 @@ export class User {
 
   static create(data: UserProp): User {
     return new User(
-      IdUser.create(data.id ?? null),
+      Id.create(data.id ?? null),
       Name.create(data.name),
       Username.create(data.username),
       Email.create(data.email),
